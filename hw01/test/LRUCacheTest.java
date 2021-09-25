@@ -16,6 +16,17 @@ public class LRUCacheTest {
     }
 
     @Test
+    public void one_return_test() {
+        LRUCache<Integer, String> cache = new LRUCache<>();
+        cache.addValue(1, "1");
+        for (int i = 0; i < LRUCache.MAX_SIZE * 2; ++i) {
+            assertTrue(cache.getValue(1).isPresent());
+            assertEquals("1", cache.getValue(1).get());
+            cache.addValue(i + 2, "2");
+        }
+    }
+
+    @Test
     public void large_test() {
         LRUCache<Integer, String> cache = new LRUCache<>();
         for (int i = 0; i < LRUCache.MAX_SIZE; ++i) {

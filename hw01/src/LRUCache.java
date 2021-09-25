@@ -2,8 +2,6 @@ import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Optional;
 
 public class LRUCache<K, V> {
@@ -32,17 +30,17 @@ public class LRUCache<K, V> {
     public static final int MAX_SIZE = 10;
 
     private void insertNode(@NonNull Node node) {
+        assert (storage.size() <= MAX_SIZE);
         linkNodes(firstNode, node);
         firstNode = node;
     }
 
     private void removeNode(@NonNull Node node) {
-        Node lhs = node.prev;
-        Node rhs = node.next;
+        final Node lhs = node.prev;
+        final Node rhs = node.next;
         assert (lhs != null);
         if (firstNode == node) {
             firstNode = firstNode.prev;
-            assert (firstNode != null);
             return;
         }
         linkNodes(lhs, rhs);
@@ -54,8 +52,8 @@ public class LRUCache<K, V> {
             removeNode(lastNode.next);
         }
         Node node = new Node(key, value);
-        insertNode(node);
         storage.put(key, node);
+        insertNode(node);
     }
 
     public Optional<V> getValue(@NotNull K key) {
@@ -63,7 +61,6 @@ public class LRUCache<K, V> {
             Node node = storage.get(key);
             removeNode(node);
             insertNode(node);
-            storage.put(key, node);
             return Optional.of(node.value);
         }
         return Optional.empty();
