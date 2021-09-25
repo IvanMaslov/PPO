@@ -1,7 +1,33 @@
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class LRUCacheTest {
+
+    @Test
+    public void one_addValue_test() {
+        LRUCache<Integer, String> cache = new LRUCache<>();
+        cache.addValue(1, "1");
+    }
+
+    @Test
+    public void one_getValue_test() {
+        LRUCache<Integer, String> cache = new LRUCache<>();
+        cache.getValue(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void add_nullable_key_test() {
+        LRUCache<Integer, String> cache = new LRUCache<>();
+        cache.addValue(null, "1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void add_nullable_value_test() {
+        LRUCache<Integer, String> cache = new LRUCache<>();
+        cache.addValue(1, null);
+    }
+
     @Test
     public void simple_test() {
         LRUCache<Integer, String> cache = new LRUCache<>();
@@ -16,7 +42,7 @@ public class LRUCacheTest {
     }
 
     @Test
-    public void one_return_test() {
+    public void stable_return_test() {
         LRUCache<Integer, String> cache = new LRUCache<>();
         cache.addValue(1, "1");
         for (int i = 0; i < LRUCache.MAX_SIZE * 2; ++i) {
@@ -34,11 +60,11 @@ public class LRUCacheTest {
         }
         for (int i = LRUCache.MAX_SIZE; i < LRUCache.MAX_SIZE * 2; ++i) {
             cache.addValue(i, String.valueOf(i));
-            for(int j = i - LRUCache.MAX_SIZE + 1; j <= i; ++j) {
+            for (int j = i - LRUCache.MAX_SIZE + 1; j <= i; ++j) {
                 assertTrue(cache.getValue(j).isPresent());
                 assertEquals(cache.getValue(j).get(), String.valueOf(j));
             }
-            for(int j = 0; j < i - LRUCache.MAX_SIZE - 1; ++j) {
+            for (int j = 0; j < i - LRUCache.MAX_SIZE - 1; ++j) {
                 assertTrue(cache.getValue(j).isEmpty());
             }
         }

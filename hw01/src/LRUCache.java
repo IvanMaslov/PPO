@@ -24,13 +24,13 @@ public class LRUCache<K, V> {
     }
 
     private final HashMap<K, Node> storage = new HashMap<>();
-    private final Node fakeNode = new Node(null, null);
-    private Node firstNode = fakeNode;
-    private Node lastNode = fakeNode;
+    private final Node lastNode = new Node(null, null);
+    private Node firstNode = lastNode;
     public static final int MAX_SIZE = 10;
 
     private void insertNode(@NonNull Node node) {
-        assert (storage.size() <= MAX_SIZE);
+        assert storage.size() <= MAX_SIZE
+                : "Can not insert node according container size";
         linkNodes(firstNode, node);
         firstNode = node;
     }
@@ -38,7 +38,7 @@ public class LRUCache<K, V> {
     private void removeNode(@NonNull Node node) {
         final Node lhs = node.prev;
         final Node rhs = node.next;
-        assert (lhs != null);
+        assert lhs != null && node != lastNode : "Can not remove initial node";
         if (firstNode == node) {
             firstNode = firstNode.prev;
             return;
@@ -48,19 +48,26 @@ public class LRUCache<K, V> {
 
     public void addValue(@NotNull K key, @NotNull V value) {
         if (storage.size() >= MAX_SIZE) {
+            assert lastNode.next != null : "Node list can not be empty";
+            assert lastNode.next.key != null : "Node can not have null key";
             storage.remove(lastNode.next.key);
             removeNode(lastNode.next);
         }
         Node node = new Node(key, value);
         storage.put(key, node);
         insertNode(node);
+        assert node.prev != null : "Node had not been inserted";
+        assert node == firstNode : "Node had not been updated after insert";
     }
 
     public Optional<V> getValue(@NotNull K key) {
         if (storage.containsKey(key)) {
             Node node = storage.get(key);
+            assert node != null : "Storage can not contain nullable value";
+            assert node != lastNode : "Storage can not contain initial node";
             removeNode(node);
             insertNode(node);
+            assert node == firstNode : "Node had not been updated after read";
             return Optional.of(node.value);
         }
         return Optional.empty();
