@@ -1,9 +1,8 @@
-package ru.akirakozov.sd.refactoring.servlet.database;
+package ru.akirakozov.sd.refactoring.database;
 
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 /*
  * Yes, that's DB singleton

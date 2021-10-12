@@ -4,7 +4,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.jupiter.api.*;
-import ru.akirakozov.sd.refactoring.servlet.database.DB;
+import ru.akirakozov.sd.refactoring.database.DB;
 
 import java.net.URI;
 import java.net.http.HttpClient;
