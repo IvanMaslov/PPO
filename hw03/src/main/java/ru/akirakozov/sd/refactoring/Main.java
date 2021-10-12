@@ -9,13 +9,14 @@ import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
  * @author akirakozov
  */
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void run() throws Exception {
         try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
             String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
                     "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
@@ -39,5 +40,10 @@ public class Main {
 
         server.start();
         server.join();
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        run();
     }
 }
