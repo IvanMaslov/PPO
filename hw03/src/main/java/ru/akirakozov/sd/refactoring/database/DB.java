@@ -2,6 +2,8 @@ package ru.akirakozov.sd.refactoring.database;
 
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /*
@@ -36,10 +38,14 @@ public class DB {
     }
 
     public static void update(String name, Long price) {
+        update(new Product(name, price));
+    }
+
+    public static void update(Product product) {
         try {
             try (Connection c = DriverManager.getConnection(DB_NAME)) {
                 String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
+                        "(NAME, PRICE) VALUES " + product.toSqlValue();
                 Statement stmt = c.createStatement();
                 stmt.executeUpdate(sql);
                 stmt.close();
@@ -49,55 +55,45 @@ public class DB {
         }
     }
 
-    private enum APPLY_CASE {
-        SAMPLING,
-        SCALAR
-    }
-
-    private static void apply(PrintWriter writer,
-                              String sqlRequest,
-                              Optional<String> message,
-                              APPLY_CASE acase) {
+    public static List<Product> getValues(String sqlRequest) {
         try {
+            List<Product> result = new ArrayList<>();
             try (Connection c = DriverManager.getConnection(DB_NAME)) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlRequest);
-                writer.println("<html><body>");
-                message.ifPresent(writer::println);
 
-                switch (acase) {
-                    case SAMPLING:
-                        while (rs.next()) {
-                            String name = rs.getString("name");
-                            int price = rs.getInt("price");
-                            writer.println(name + "\t" + price + "</br>");
-                        }
-                        break;
-                    case SCALAR:
-                        if (rs.next()) {
-                            writer.println(rs.getInt(1));
-                        }
-                        break;
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    long price = rs.getInt("price");
+                    result.add(new Product(name, price));
                 }
-                writer.println("</body></html>");
 
                 rs.close();
                 stmt.close();
             }
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void readAsHtml(PrintWriter writer) {
-        apply(writer, "SELECT * FROM PRODUCT", Optional.empty(), APPLY_CASE.SAMPLING);
-    }
+    public static long getScalar(String sqlRequest) {
+        try {
+            long result = 0L;
+            try (Connection c = DriverManager.getConnection(DB_NAME)) {
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlRequest);
 
-    public static void applyWithSample(PrintWriter writer, String sqlRequest, String message) {
-        apply(writer, sqlRequest, Optional.of(message), APPLY_CASE.SAMPLING);
-    }
+                if (rs.next()) {
+                    result = rs.getInt(1);
+                }
 
-    public static void applyNoSample(PrintWriter writer, String sqlRequest, String message) {
-        apply(writer, sqlRequest, Optional.of(message), APPLY_CASE.SCALAR);
+                rs.close();
+                stmt.close();
+            }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
