@@ -17,12 +17,15 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class Main {
+    public static int PORT = 8081;
+
     public static void run() throws Exception {
         DB.init();
 
-        Server server = new Server(8081);
+        Server server = new Server(PORT);
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        ServletContextHandler context =
+                new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
 
@@ -32,7 +35,6 @@ public class Main {
 
         server.start();
         server.join();
-
     }
 
     public static void main(String[] args) throws Exception {
