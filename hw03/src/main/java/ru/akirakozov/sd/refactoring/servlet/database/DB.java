@@ -68,4 +68,48 @@ public class DB {
             throw new RuntimeException(e);
         }
     }
+
+    public static void applyWithSample(PrintWriter writer, String sqlRequest, String message) {
+        try {
+            try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlRequest);
+                writer.println("<html><body>");
+                writer.println(message);
+
+                while (rs.next()) {
+                    String  name = rs.getString("name");
+                    int price  = rs.getInt("price");
+                    writer.println(name + "\t" + price + "</br>");
+                }
+                writer.println("</body></html>");
+
+                rs.close();
+                stmt.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void applyNoSample(PrintWriter writer, String sqlRequest, String message) {
+        try {
+            try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlRequest);
+                writer.println("<html><body>");
+                writer.println(message);
+
+                if (rs.next()) {
+                    writer.println(rs.getInt(1));
+                }
+                writer.println("</body></html>");
+
+                rs.close();
+                stmt.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
