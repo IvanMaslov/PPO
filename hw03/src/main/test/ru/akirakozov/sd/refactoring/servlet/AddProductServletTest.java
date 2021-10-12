@@ -4,14 +4,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.jupiter.api.*;
+import ru.akirakozov.sd.refactoring.servlet.database.DB;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,8 +19,6 @@ class AddProductServletTest {
 
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final Server server = new Server(PORT);
-
-    private final DB db = new DB();
 
     @BeforeAll
     public static void initServer() {
@@ -34,13 +30,13 @@ class AddProductServletTest {
 
     @BeforeEach
     public void initDB() throws Exception {
-        db.init();
+        DB.init();
         server.start();
     }
 
     @AfterEach
     public void dropDB () throws Exception {
-        db.drop();
+        DB.drop();
         server.stop();
     }
 
